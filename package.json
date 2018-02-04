@@ -1,0 +1,15 @@
+{
+  "name": "ex1",
+  "version": "1.0.0",
+  "description": "1. This exercise calls for you to write some async flow-control code. To start off with, you'll use callbacks only.",
+  "main": "ex1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "couchbase": "^2.4.3"
+  }
+}
