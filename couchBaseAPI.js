@@ -2,13 +2,27 @@ const couchbase = require('couchbase');
 const cluster = new couchbase.Cluster('couchbase://localhost/');
 cluster.authenticate('mytBucket1User','mytBucket1Pwd');
 
-const ViewQuery = couchbase.ViewQuery;
-const query = ViewQuery.from('product_select', 'by_id');
 
 const bucket = cluster.openBucket('mytBucket1');
 const Model = {};
 
+Model.query = function query(){
+    const N1qlQuery = couchbase.N1qlQuery;
+    const nickel = N1qlQuery.fromString("select name, price, cat from mytBucket1 where kind = 'product' and cat = 'blue' limit 10"); 
+
+    console.log('Querying...');
+    bucket.query(nickel, (err, rows, meta)=>{
+        for (let i = 0; i < rows.length; i++){
+            console.log('Row : ' + JSON.stringify(rows[i]));
+            console.log('Product Name: %s - Price: %s - Color: %s', rows[i].name, rows[i].price, rows[i].cat);
+        }
+    });
+}
+
 Model.search = function search(){
+    const ViewQuery = couchbase.ViewQuery;
+    const query = ViewQuery.from('product_select', 'by_id');
+
     console.log('Calling Search...');
     bucket.query(query, function(err, results){
         if(err){
@@ -23,7 +37,11 @@ Model.search = function search(){
     });
 }
 
-Model.process = function process(callback){
+Model.process = function process(viewName, callback){
+    const ViewQuery = couchbase.ViewQuery;
+    const query = ViewQuery.from('product_select', viewName);
+
+
     console.log('Calling Search...');
     bucket.query(query, function(err, results){
         if(err){
@@ -37,8 +55,11 @@ Model.process = function process(callback){
 
 Model.get = function get(docName){
     bucket.get(docName, (err, res)=>{
-        if(err)
+        if(err){
+            console.log(err);
             throw err;
+        }
+            
         
         console.log('Value: ', res.value);
     });
